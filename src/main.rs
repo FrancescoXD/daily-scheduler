@@ -14,7 +14,7 @@ fn write_t(term: &mut Box<term::StdoutTerminal>, text: &str, color: term::color:
 
 fn create_default_config() {
     let mut file = fs::File::create(CONFIG_FILE).expect("could not create file");
-    file.write_all(b"[colors]\ndesc = BLUE\nhours = GREEN").expect("could not write to file");
+    file.write_all(b"[colors]\ndesc = BLUE\nhours = GREEN\n").expect("could not write to file");
     
     /* config.ini:
     [colors]
