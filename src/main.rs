@@ -5,21 +5,34 @@ use yansi::{Color, Paint};
 
 const CONFIG_FILE: &str = "config.ini";
 
-fn write_t(text: &str, color: yansi::Color) {
-    match color {
-        Color::Blue => print!("{}", Paint::blue(text)),
-        Color::Green => print!("{}", Paint::green(text)),
-        Color::Yellow => print!("{}", Paint::yellow(text)),
-        Color::Magenta => print!("{}", Paint::magenta(text)),
-        Color::Red => print!("{}", Paint::red(text)),
-        _ => panic!("color not found"),
-    }
+fn write_t(text: &str, color: Color) {
+    print!(
+        "{}",
+        match color {
+            Color::Black => Paint::black(text),
+            Color::Red => Paint::red(text),
+            Color::Green => Paint::green(text),
+            Color::Yellow => Paint::yellow(text),
+            Color::Blue => Paint::blue(text),
+            Color::Magenta => Paint::magenta(text),
+            Color::Cyan => Paint::cyan(text),
+            Color::White => Paint::white(text),
+            _ => panic!("color not found"),
+        }
+    );
 }
 
-fn match_term_color(color: &str) -> Color {
+fn match_term_color(color: &str) -> Result<Color, &str> {
     match color {
-        "BLUE" => Color::Blue,
-        _ => panic!("color not found in config file"),
+        "BLACK" => Ok(Color::Black),
+        "RED" => Ok(Color::Red),
+        "GREEN" => Ok(Color::Green),
+        "YELLOW" => Ok(Color::Yellow),
+        "BLUE" => Ok(Color::Blue),
+        "MAGENTA" => Ok(Color::Magenta),
+        "CYAN" => Ok(Color::Cyan),
+        "WHITE" => Ok(Color::White),
+        _ => Err("color not found"),
     }
 }
 
@@ -66,7 +79,12 @@ fn main() {
 
     let config_content = fs::read_to_string(CONFIG_FILE).unwrap();
     println!("{}", config_content);
+
     let color_desc = config_file.get("colors", "desc").unwrap();
     println!("{}", color_desc);
-    write_t("test color\n", match_term_color(&color_desc));
+    let color_desc = match_term_color(&color_desc);
+    match color_desc {
+        Ok(color) => write_t("desc color\n", color),
+        Err(e) => panic!("{}", e),
+    }
 }
