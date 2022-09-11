@@ -75,16 +75,27 @@ fn main() {
     }
 
     // load INI config file
-    config_file.load(CONFIG_FILE.to_string()).unwrap();
+    config_file.load(CONFIG_FILE).unwrap();
 
-    let config_content = fs::read_to_string(CONFIG_FILE).unwrap();
-    println!("{}", config_content);
-
-    let color_desc = config_file.get("colors", "desc").unwrap();
-    println!("{}", color_desc);
+    let color_desc = config_file
+        .get("colors", "desc")
+        .expect("could not find desc color in config file");
     let color_desc = match_term_color(&color_desc);
-    match color_desc {
-        Ok(color) => write_t("desc color\n", color),
-        Err(e) => panic!("{}", e),
-    }
+    let color_hours = config_file
+        .get("colors", "hours")
+        .expect("could not find hours color in config file");
+    let color_hours = match_term_color(&color_hours);
+
+    let color_desc = match color_desc {
+        Ok(color) => color,
+        Err(_) => panic!("desc color not found in config file"),
+    };
+
+    let color_hours = match color_hours {
+        Ok(color) => color,
+        Err(_) => panic!("hours color not found in config file"),
+    };
+
+    write_t("desc color ", color_desc);
+    write_t("hours color\n", color_hours);
 }
