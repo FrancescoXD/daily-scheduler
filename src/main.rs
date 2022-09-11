@@ -6,7 +6,6 @@ use yansi::{Color, Paint};
 
 const CONFIG_FILE: &str = "config.ini";
 
-#[derive(Debug)]
 struct Scheduler {
     day: String,
     hour_start: String,
@@ -71,7 +70,10 @@ fn show_main_menu() {
 
     let mut response = String::new();
     std::io::stdin().read_line(&mut response).unwrap();
-    let response: u8 = response.trim().parse().expect("unable to parse string to uint");
+    let response: u8 = response
+        .trim()
+        .parse()
+        .expect("unable to parse string to uint");
     println!("{}", response);
 }
 
