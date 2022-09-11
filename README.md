@@ -20,9 +20,9 @@ And then check `target/release/learnrustwithterm`. (yeah, I should change the na
 - WHITE
 
 ## default config file
-[colors]
-desc = BLUE
-hours = GREEN
+[colors]  
+desc = BLUE  
+hours = GREEN  
 
-[database]
-path = ./data.db
+[database]  
+path = ./data.db  
