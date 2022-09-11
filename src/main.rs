@@ -1,22 +1,32 @@
 use configparser::ini::Ini;
+use rusqlite::{params, Connection, Result};
 use std::fs;
 use std::io::prelude::*;
 use yansi::{Color, Paint};
 
 const CONFIG_FILE: &str = "config.ini";
 
+#[derive(Debug)]
+struct Scheduler {
+    day: String,
+    hour_start: String,
+    hour_end: String,
+    description: String,
+}
+
 fn write_t(text: &str, color: Color) {
     print!(
         "{}",
         match color {
-            Color::Black => Paint::black(text),
-            Color::Red => Paint::red(text),
-            Color::Green => Paint::green(text),
-            Color::Yellow => Paint::yellow(text),
-            Color::Blue => Paint::blue(text),
-            Color::Magenta => Paint::magenta(text),
-            Color::Cyan => Paint::cyan(text),
-            Color::White => Paint::white(text),
+            Color::Black => Paint::black(text).bold(),
+            Color::Red => Paint::red(text).bold(),
+            Color::Green => Paint::green(text).bold(),
+            Color::Yellow => Paint::yellow(text).bold(),
+            Color::Blue => Paint::blue(text).bold(),
+            Color::Magenta => Paint::magenta(text).bold(),
+            Color::Cyan => Paint::cyan(text).bold(),
+            Color::White => Paint::white(text).bold(),
+            Color::Default => Paint::default(text),
             _ => panic!("color not found"),
         }
     );
@@ -38,14 +48,31 @@ fn match_term_color(color: &str) -> Result<Color, &str> {
 
 fn create_default_config() {
     let mut file = fs::File::create(CONFIG_FILE).expect("could not create file");
-    file.write_all(b"[colors]\ndesc = BLUE\nhours = GREEN\n")
+    file.write_all(b"[colors]\ndesc = BLUE\nhours = GREEN\n\n[database]\npath = ./data.db\n")
         .expect("could not write to file");
+}
 
-    /* config.ini:
-    [colors]
-    desc = BLUE
-    hours = GREEN
-    */
+fn create_default_database(db_path: &str) -> Result<()> {
+    let db = Connection::open(db_path).expect("unable to open database");
+    db.execute("create table if not EXISTS scheduler (day TEXT, hour_start TEX, hour_end TEXT, description TEXT);", ()).unwrap();
+
+    Ok(())
+}
+
+fn show_main_menu() {
+    write_t("[1] ", Color::Green);
+    write_t("Add new day\n", Color::Cyan);
+    write_t("[2] ", Color::Green);
+    write_t("Add new task made to a day\n", Color::Cyan);
+    write_t("[3] ", Color::Green);
+    write_t("Remove a task\n", Color::Cyan);
+    print!("=> ");
+    std::io::stdout().flush().unwrap();
+
+    let mut response = String::new();
+    std::io::stdin().read_line(&mut response).unwrap();
+    let response: u8 = response.trim().parse().expect("unable to parse string to uint");
+    println!("{}", response);
 }
 
 fn main() {
@@ -58,9 +85,9 @@ fn main() {
     write_t("Daily ", Color::Green);
     write_t("Scheduler\n", Color::Blue);
 
-    print!("Write what you did ");
+    write_t("Write what you did ", Color::White);
     write_t("today", Color::Magenta);
-    print!(" to make your tomorrow ");
+    write_t(" to make your tomorrow ", Color::White);
     write_t("better!\n", Color::Yellow);
 
     // check config file and if not exists make a new one
@@ -77,6 +104,20 @@ fn main() {
     // load INI config file
     config_file.load(CONFIG_FILE).unwrap();
 
+    // get and check db path
+    let db_path = config_file.get("database", "path").unwrap();
+    if !std::path::Path::new(&db_path).exists() {
+        write_t(
+            "[error] database not found, making a new one...\n",
+            Color::Red,
+        );
+        match create_default_database(&db_path) {
+            Ok(_) => write_t("[info] created database file\n", Color::Yellow),
+            Err(_) => panic!("unable to create database file"),
+        }
+    }
+
+    // get description and hours colors
     let color_desc = config_file
         .get("colors", "desc")
         .expect("could not find desc color in config file");
@@ -96,6 +137,5 @@ fn main() {
         Err(_) => panic!("hours color not found in config file"),
     };
 
-    write_t("desc color ", color_desc);
-    write_t("hours color\n", color_hours);
+    show_main_menu();
 }
