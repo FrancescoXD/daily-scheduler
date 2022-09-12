@@ -7,7 +7,7 @@ Schedule your today to make your tomorrow better
 ```
 cargo build --release
 ```
-And then check `target/release/learnrustwithterm`. (yeah, I should change the name with the project name, but it's fine)
+And then check `target/release/daily-scheduler`.
 
 ## colors available
 - BLACK
@@ -22,7 +22,7 @@ And then check `target/release/learnrustwithterm`. (yeah, I should change the na
 ## default config file
 ```
 [colors]  
-desc = BLUE  
+description = BLUE
 hours = GREEN  
 
 [database]  

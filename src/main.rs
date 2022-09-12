@@ -34,7 +34,7 @@ fn main() {
     let mut config_file = config::Config::new(CONFIG_FILE);
     if !config_file.check_path() {
         terminal::write(
-            "\n[error] config file not found, making a new one...\n",
+            "[error] config file not found, making a new one...\n",
             Color::Red,
         );
         config_file.create_default_config();

@@ -38,6 +38,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65cbde0d4b888436a51954624cafd198aee478d00cf5db866c3519a8986ecb18"
 
 [[package]]
+name = "daily-scheduler"
+version = "0.1.0"
+dependencies = [
+ "configparser",
+ "rusqlite",
+ "yansi",
+]
+
+[[package]]
 name = "fallible-iterator"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -76,15 +85,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d452c155cb93fecdfb02a73dd57b5d8e442c2063bd7aac72f1bc5e4263a43086"
 dependencies = [
  "hashbrown",
-]
-
-[[package]]
-name = "learnrustwithterm"
-version = "0.1.0"
-dependencies = [
- "configparser",
- "rusqlite",
- "yansi",
 ]
 
 [[package]]
