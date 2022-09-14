@@ -15,10 +15,13 @@ impl Config {
         }
     }
 
-    pub fn create_default_config(&self) {
+    pub fn create_default_config(&self) -> Result<(), &str> {
         let mut file = fs::File::create(self.file.clone()).expect("could not create file");
-        file.write_all(b"[colors]\ndescription = BLUE\nhours = GREEN\n\n[database]\npath = ./data.db\n")
-            .expect("could not write to file");
+        if let Err(_) = file.write_all(b"[colors]\ndescription = BLUE\nhours = GREEN\n\n[database]\npath = ./data.db\n") {
+            Err("unable to make default config file")
+        } else {
+            Ok(())
+        }
     }
 
     pub fn check_path(&self) -> bool {

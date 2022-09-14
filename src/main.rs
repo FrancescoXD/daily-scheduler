@@ -37,18 +37,26 @@ fn main() {
             "[error] config file not found, making a new one...\n",
             Color::Red,
         );
-        config_file.create_default_config();
-        terminal::write("[info] created config file!\n", Color::Yellow);
+
+        if let Ok(_) = config_file.create_default_config() {
+            terminal::write("[info] created config file!\n", Color::Yellow);
+        }
     }
 
     if let Err(e) = config_file.load_config() {
         terminal::write(e, Color::Red);
     }
 
-    let db_path = config_file.get("database", "path").unwrap();
-    let db = database::Database::new(&db_path);
+    let db_path = config_file.get("database", "path");
+    if let None = db_path {
+        panic!("database path not found in config file");
+    }
+
+    let db = database::Database::new(&db_path.unwrap());
     if !db.check_path() {
-        db.create_default_database().unwrap();
+        if let Err(e) = db.create_default_database() {
+            panic!("{}", e);
+        }
     }
 
     terminal::write("Daily ", Color::Green);
@@ -81,5 +89,6 @@ fn main() {
 
     terminal::write("description color ", color_desc);
     terminal::write("hours color\n", color_hours);
+    println!("{}", db.get_local_datetime());
     show_main_menu();
 }
