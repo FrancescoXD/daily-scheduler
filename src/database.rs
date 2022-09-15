@@ -31,4 +31,9 @@ impl Database {
     pub fn get_local_datetime(&self) -> String {
         String::from(&self.today.format("%Y-%m-%d").to_string())
     }
+
+    pub fn insert_test(&self) {
+        let db = Connection::open(self.path.clone()).unwrap();
+        db.execute("insert into scheduler (day, hour_start, hour_end, description) values (?1, ?2, ?3, ?4)", (self.get_local_datetime(), "10:30", "11:30", "worked on scheduler")).unwrap();
+    }
 }

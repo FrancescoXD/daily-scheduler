@@ -1,5 +1,5 @@
-use yansi::{Color, Paint};
 use std::io::prelude::*;
+use yansi::{Color, Paint};
 
 pub fn ask_input() -> String {
     let mut response = String::new();
