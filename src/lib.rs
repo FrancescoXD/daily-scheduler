@@ -7,58 +7,44 @@ use database::Database;
 
 use yansi::Color;
 
-fn show_selection() {
-    terminal::write("[1] ", Color::Green);
-    terminal::write("Add new day\n", Color::Cyan);
-    terminal::write("[2] ", Color::Green);
-    terminal::write("Add new task made to a day\n", Color::Cyan);
-    terminal::write("[3] ", Color::Green);
-    terminal::write("Remove a task\n", Color::Cyan);
-    print!("=> ");
-
-    let response: u8 = terminal::ask_input()
-        .trim()
-        .parse()
-        .expect("unable to parse string to uint");
-
-    match response {
-        1 => terminal::write("selected 1\n", Color::Blue),
-        _ => terminal::write("option not found\n", Color::Red),
-    }
+pub struct Scheduler {
+    pub config_file: Config,
+    pub db: Database,
+    pub color_desc: Color,
+    pub color_hours: Color,
 }
 
-pub fn main_menu(config_file: &Config, db: &Database) {
-    terminal::write("Daily ", Color::Green);
-    terminal::write("Scheduler\n", Color::Blue);
+impl Scheduler {
+    fn show_selection(&self) {
+        terminal::write("[1] ", Color::Green);
+        terminal::write("Add new day\n", Color::Cyan);
+        terminal::write("[2] ", Color::Green);
+        terminal::write("Add new task made to a day\n", Color::Cyan);
+        terminal::write("[3] ", Color::Green);
+        terminal::write("Remove a task\n", Color::Cyan);
+        print!("=> ");
 
-    terminal::write("Write what you did ", Color::White);
-    terminal::write("today", Color::Magenta);
-    terminal::write(" to make your tomorrow ", Color::White);
-    terminal::write("better!\n", Color::Yellow);
+        let response: u8 = terminal::ask_input()
+            .trim()
+            .parse()
+            .expect("unable to parse string to uint");
 
-    // get description and hours colors
-    let color_desc = config_file
-        .get("colors", "description")
-        .expect("could not find desc color in config file");
-    let color_desc = terminal::match_term_color(&color_desc);
-    let color_hours = config_file
-        .get("colors", "hours")
-        .expect("could not find hours color in config file");
-    let color_hours = terminal::match_term_color(&color_hours);
+        match response {
+            1 => terminal::write("selected 1\n", Color::Blue),
+            _ => terminal::write("option not found\n", Color::Red),
+        }
+    }
 
-    let color_desc = match color_desc {
-        Ok(color) => color,
-        Err(_) => panic!("desc color not found in config file"),
-    };
+    pub fn main_menu(&mut self) {
+        terminal::write("Daily ", Color::Green);
+        terminal::write("Scheduler\n", Color::Blue);
 
-    let color_hours = match color_hours {
-        Ok(color) => color,
-        Err(_) => panic!("hours color not found in config file"),
-    };
+        terminal::write("Write what you did ", Color::White);
+        terminal::write("today", Color::Magenta);
+        terminal::write(" to make your tomorrow ", Color::White);
+        terminal::write("better!\n", Color::Yellow);
 
-    terminal::write("description color ", color_desc);
-    terminal::write("hours color\n", color_hours);
-    println!("{}", db.get_local_datetime());
-    show_selection();
-    db.insert_test();
+        self.show_selection();
+        self.db.insert_test();
+    }
 }
